@@ -1,0 +1,26 @@
+{
+  "name": "sportradar-advanced-challenge",
+  "version": "1.0.0",
+  "description": "A pipeline for ingesting live NHL game data.",
+  "main": "main.js",
+  "scripts": {
+    "build": "node node_modules/eslint/bin/eslint.js --ext .ts --fix ./src && tsc -p .",
+    "start": "node ./dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Appelgren",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.24.0",
+    "typescript": "^4.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint-import-resolver-typescript": "^3.5.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-json": "^3.1.0",
+    "prettier": "^2.7.1"
+  },
+  "dependencies": {
+    "jest": "^29.1.2"
+  }
+}
