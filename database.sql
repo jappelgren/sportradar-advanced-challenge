@@ -36,7 +36,7 @@ create table nhl_stat_pipeline.games(
     game_id bigint primary key,
     home_team_id bigint references nhl_stat_pipeline.teams(team_id),
     away_team_id bigint references nhl_stat_pipeline.teams(team_id),
-    game_date date not null
+    game_date timestamp not null
 );
 
 create table nhl_stat_pipeline.plays(

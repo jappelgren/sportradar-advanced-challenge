@@ -41,8 +41,14 @@ export class Games {
 
   public async recordTodaysGames() {
     const dbActions = new GamesDBActions();
-    const games = await this.getTodaysGames() as unknown as IGame[];
+    const games = (await this.getTodaysGames()) as unknown as IGame[];
     const parsedGames = this.parseGamesForDB(games);
+    const gamesInDb = await dbActions.getGamesByIds(
+      parsedGames.map((game) => game.gameId)
+    );
+    if (gamesInDb.length > 0) {
+      dbActions.deleteGames(gamesInDb.map((game) => game.game_id));
+    }
     dbActions.recordGames(parsedGames);
   }
 }
