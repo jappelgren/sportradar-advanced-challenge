@@ -1,12 +1,18 @@
-import { GameWatcher } from './watcher/watcher';
+// import { GameWatcher } from './watcher/watcher';
 
-const watcher = new GameWatcher(2022010076);
-const main = async () => {
-  await watcher.fetchGameFeed();
-};
+// const watcher = new GameWatcher(2022010092);
 
-let i = 0;
-while (i <= 1) {
-  main();
-  i++;
-}
+// const main = async () => {
+//   console.log(await watcher.fetchGameData());
+//   setTimeout(() => {
+//     main();
+//   }, 10000);
+// };
+
+// main();
+
+import { Games } from './pregame/games';
+
+const pregame = new Games();
+
+pregame.recordTodaysGames();

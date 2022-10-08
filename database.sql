@@ -42,6 +42,7 @@ create table nhl_stat_pipeline.games(
 create table nhl_stat_pipeline.plays(
     play_id serial primary key,
     game_id bigint references nhl_stat_pipeline.games(game_id),
+    play_type nhl_stat_pipeline.play_type not null,
     "time_stamp" timestamp not null
 );
 
@@ -49,7 +50,10 @@ create table nhl_stat_pipeline.play_stats(
     play_stats_id serial primary key,
     play_id bigint references nhl_stat_pipeline.plays(play_id),
     player_id bigint references nhl_stat_pipeline.players(player_id),
-    play_type nhl_stat_pipeline.play_type not null,
+    hit_value int not null default 0,
+    goal_value int not null default 0,
+    assist_value int not null default 0,
+    penalty_minutes int not null default 0,
     point_value int not null default 0
 );
 

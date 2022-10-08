@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Play } from './models/watcher-models';
+import { IPlay } from './models/watcher-models';
 
 enum EventTypes {
   HIT = 'HIT',
@@ -16,7 +16,7 @@ export class GameWatcher {
     this.playOffset = 0;
   }
 
-  public async fetchGameFeed(): Promise<Play[]> {
+  public async fetchGameData(): Promise<IPlay[]> {
     const eventTypes: string[] = Object.values(EventTypes);
     try {
       const gameData = await axios.get(
@@ -24,11 +24,13 @@ export class GameWatcher {
       );
 
       if (gameData && gameData.status === 200) {
-        const plays: Play[] = gameData.data.liveData.plays.allPlays;
-        const filteredPlays: Play[] = plays
+        const plays: IPlay[] = gameData.data.liveData.plays.allPlays;
+        const filteredPlays: IPlay[] = plays
           .slice(this.playOffset)
-          .filter((play: Play) => eventTypes.includes(play.result.eventTypeId));
-
+          .filter((play: IPlay) => eventTypes.includes(play.result.eventTypeId));
+        console.log(
+          `Total plays fetched ${plays.length}, plays I care about ${filteredPlays.length}`
+        );
         this.playOffset = plays.length - 1;
         filteredPlays.length > 0 &&
           console.info(`Received ${filteredPlays.length} new plays.`);
@@ -41,4 +43,6 @@ export class GameWatcher {
       );
     }
   }
+
+  
 }

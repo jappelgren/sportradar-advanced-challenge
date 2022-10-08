@@ -1,4 +1,4 @@
-export interface AbbreviatedPlayer {
+interface IAbbreviatedPlayer {
   player: {
     id: number;
     fullName: string;
@@ -8,8 +8,8 @@ export interface AbbreviatedPlayer {
   seasonTotal?: number;
 }
 
-export interface Play {
-  players: AbbreviatedPlayer[];
+export interface IPlay {
+  players: IAbbreviatedPlayer[];
   result: {
     event: string;
     eventCode: string;
