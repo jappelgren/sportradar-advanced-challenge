@@ -41,3 +41,4 @@ Continue with the following steps when Node and Postgres are ready to go.
 5. Run `npm install`
 6. Run `npm run build` to compile the TypeScript into JavaScript.
 7. Run `npm run start` to start the app.  By default the app will check for games hourly from 4 AM to 5 PM.  To change this, edit the cron string in main.ts.
+- Test can be ran by running `npm run test`.

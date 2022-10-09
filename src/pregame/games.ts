@@ -54,7 +54,7 @@ export class Games {
     const dbActions = new GamesDBActions();
     const games = await this.getTodaysGames();
     if (games.length < 1) {
-      console.info(`No games received from API, assuming not games scheduled today.`);
+      console.info(`No games received from API, assuming no games scheduled today.`);
       return;
     }
     const parsedGames = this.parseGamesForDB(games);
