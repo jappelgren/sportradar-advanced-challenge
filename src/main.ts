@@ -1,12 +1,14 @@
-import { GameWatcher } from './watcher/watcher';
+import cron from 'node-cron';
+import { Games } from './pregame/games';
+// import { GameWatcher } from './watcher/watcher';
 
-const watcher = new GameWatcher(2022010099);
+// const watcher = new GameWatcher(2022010099);
 
-const main = async () => {
-  watcher.recordPlays();
-};
+// const main = async () => {
+//   watcher.recordPlays();
+// };
 
-main();
+// main();
 
 // import { Games } from './pregame/games';
 
@@ -22,3 +24,13 @@ main();
 //   console.log(roster);
 // };
 // main();
+
+class Main {
+  static startUp() {
+    cron.schedule('* 4-17 * * *', () => {
+
+    });
+  }
+}
+
+Main.startUp();

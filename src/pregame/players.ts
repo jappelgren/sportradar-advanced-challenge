@@ -4,15 +4,25 @@ import { IFeedPlayersObject, IParsedPlayer, IPlayerFullDetails } from '../models
 
 export class Players {
   private async getPlayersByGameId(gameId: number): Promise<IPlayerFullDetails[]> {
-    const playerResult = await axios.get(
-      ` https://statsapi.web.nhl.com/api/v1/game/${gameId}/feed/live`
-    );
-    const playersInGame: IPlayerFullDetails[] = [];
-    const playersObject: IFeedPlayersObject = playerResult.data.gameData.players;
-    for (const key in playersObject) {
-      playersInGame.push(playersObject[key]);
+    try {
+      const playerResult = await axios.get(
+        ` https://statsapi.web.nhl.com/api/v1/game/${gameId}/feed/live`
+      );
+      if (playerResult && playerResult.status === 200) {
+        if (playerResult.data.gameData.players) {
+          const playersInGame: IPlayerFullDetails[] = [];
+          const playersObject: IFeedPlayersObject = playerResult.data.gameData.players;
+          for (const key in playersObject) {
+            playersInGame.push(playersObject[key]);
+          }
+          return playersInGame;
+        }
+        throw new Error(`No players found for game id ${gameId}, make sure ${gameId} is a valid game id.`);
+      }
+      throw new Error(`Received a ${playerResult.status} response from NHL API.`);
+    } catch (error) {
+      console.error(`An error occurred while fetching players for game id ${gameId}. ${error}`);
     }
-    return playersInGame;
   }
 
   private parsePlayersForDB(players: IPlayerFullDetails[]) {
@@ -33,6 +43,9 @@ export class Players {
   public async recordPlayers(gameId: number): Promise<void> {
     const playerDbActions = new PlayerDBActions();
     const players = await this.getPlayersByGameId(gameId);
+    if(players.length < 1) {
+      return;
+    }
     const parsedPlayers = this.parsePlayersForDB(players);
     playerDbActions.recordPlayers(parsedPlayers);
   }

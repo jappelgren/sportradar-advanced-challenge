@@ -1,27 +1,16 @@
 import axios from 'axios';
 import { WatcherDBActions } from '../db/actions/watcherDbActions';
-import { IParsedPlay, IParsedPlayStat, IPlay } from '../models/watcher-models';
-
-enum EventTypes {
-  HIT = 'HIT',
-  GOAL = 'GOAL',
-  PENALTY = 'PENALTY',
-}
-
-enum PlayerTypes {
-  HITTER = 'Hitter',
-  SCORER = 'Scorer',
-  ASSIST = 'Assist',
-  PENALTY_ON = 'PenaltyOn'
-}
-
+import { PlayerTypes } from '../models/player-models';
+import { EventTypes, IParsedPlay, IParsedPlayStat, IPlay } from '../models/watcher-models';
 export class GameWatcher {
   public gameId: number;
+  public gameOver: boolean;
   private playOffset: number;
 
   constructor(gameId: number) {
     this.gameId = gameId;
     this.playOffset = 0;
+    this.gameOver = false;
   }
 
   private async fetchGameData(): Promise<IPlay[]> {
@@ -32,13 +21,13 @@ export class GameWatcher {
       );
 
       if (gameData && gameData.status === 200) {
+        if (gameData.data.gameData.status.abstractGameState === 'Final' || gameData.data.gameData.dateTime.endDateTime) {
+          this.gameOver = true;
+        }
         const plays: IPlay[] = gameData.data.liveData.plays.allPlays;
         const filteredPlays: IPlay[] = plays
           .slice(this.playOffset)
           .filter((play: IPlay) => eventTypes.includes(play.result.eventTypeId));
-        console.log(
-          `Total plays fetched ${plays.length}, plays I care about ${filteredPlays.length}`
-        );
         this.playOffset = plays.length - 1;
         filteredPlays.length > 0 &&
           console.info(`Received ${filteredPlays.length} new plays.`);
@@ -57,7 +46,8 @@ export class GameWatcher {
       return {
         gameId: this.gameId,
         playType: play.result.eventTypeId,
-        timeStamp: play.about.dateTime
+        timeStamp: play.about.dateTime,
+        teamId: play.team.id
       };
     });
     return parsedPlays;
@@ -89,9 +79,15 @@ export class GameWatcher {
     const watcherDBActions = new WatcherDBActions();
 
     const filteredPlays = await this.fetchGameData();
+    if (filteredPlays.length < 1) {
+      return;
+    }
     const parsedPlays = this.parsePlaysForDB(filteredPlays);
 
     const playDBResult = await watcherDBActions.recordPlays(parsedPlays);
+    if (playDBResult.length < 1) {
+      return;
+    }
     const newPlayIds = playDBResult.map((play) => play.play_id);
     const parsedPlayStats = this.parsePlayStatsForDB(newPlayIds, filteredPlays);
 

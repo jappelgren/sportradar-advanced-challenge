@@ -1,5 +1,11 @@
 import { IAbbreviatedPlayer } from './player-models';
 
+
+export enum EventTypes {
+  HIT = 'HIT',
+  GOAL = 'GOAL',
+  PENALTY = 'PENALTY',
+}
 export interface IPlay {
   players: {
     player: IAbbreviatedPlayer;
@@ -45,6 +51,7 @@ export interface IParsedPlay {
   gameId: number;
   playType: string;
   timeStamp: Date;
+  teamId: number;
 }
 
 export interface IParsedPlayStat {

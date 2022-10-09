@@ -1,3 +1,10 @@
+export enum PlayerTypes {
+  HITTER = 'Hitter',
+  SCORER = 'Scorer',
+  ASSIST = 'Assist',
+  PENALTY_ON = 'PenaltyOn'
+}
+
 export interface IAbbreviatedPlayer {
   id: number;
   fullName: string;

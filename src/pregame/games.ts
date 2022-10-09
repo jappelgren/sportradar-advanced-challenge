@@ -13,16 +13,20 @@ export class Games {
         `https://statsapi.web.nhl.com/api/v1/schedule?date=${today}`
       );
       if (scheduleResult && scheduleResult.status === 200) {
-        const todaysGames: IGame[] = scheduleResult.data.dates[0].games;
-        this.todaysGames = todaysGames;
-        return todaysGames;
+        if (scheduleResult.data.dates.length > 0) {
+          const todaysGames: IGame[] = scheduleResult.data.dates[0].games;
+          this.todaysGames = todaysGames;
+          return todaysGames;
+        }
+        console.info(`No games scheduled for ${today}.`);
+        return [];
       }
       throw new Error(
         `Received a ${scheduleResult.status} response from the NHL API while fetching scheduled games.`
       );
     } catch (error) {
       console.error(
-        `An error occurred while fetching today\'s games. ${error}`
+        `An error occurred while fetching today's games. ${error}`
       );
     }
   }
@@ -41,14 +45,12 @@ export class Games {
 
   public async recordTodaysGames() {
     const dbActions = new GamesDBActions();
-    const games = (await this.getTodaysGames()) as unknown as IGame[];
-    const parsedGames = this.parseGamesForDB(games);
-    const gamesInDb = await dbActions.getGamesByIds(
-      parsedGames.map((game) => game.gameId)
-    );
-    if (gamesInDb.length > 0) {
-      dbActions.deleteGames(gamesInDb.map((game) => game.game_id));
+    const games = await this.getTodaysGames();
+    if(games.length < 1) {
+      console.info(`No games received from API, assuming not games scheduled today.`);
+      return;
     }
+    const parsedGames = this.parseGamesForDB(games);
     dbActions.recordGames(parsedGames);
   }
 }
