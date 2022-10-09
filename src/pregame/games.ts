@@ -1,5 +1,5 @@
 import axios from 'axios';
-// import { format } from 'date-fns';
+import { format } from 'date-fns';
 import { GamesDBActions } from '../db/actions/gamesDbActions';
 import { IGame, IParsedGame } from '../models/game-model';
 
@@ -13,8 +13,7 @@ export class Games {
   }
 
   private async getTodaysGames(): Promise<IGame[]> {
-    // const today: string = format(new Date(), 'yyyy-MM-dd');
-    const today = '2022-10-07';
+    const today: string = format(new Date(), 'yyyy-MM-dd');
     try {
       const scheduleResult = await axios.get(
         `https://statsapi.web.nhl.com/api/v1/schedule?date=${today}`
