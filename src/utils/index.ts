@@ -15,4 +15,17 @@ export class Utils {
             .join(',');
         return preparedStatements;
     }
+
+    static nowInUtc() {
+        const today = new Date();
+        const nowUtc = Date.UTC(
+            today.getUTCFullYear(),
+            today.getUTCMonth(),
+            today.getUTCDate(),
+            today.getUTCHours(),
+            today.getUTCMinutes(),
+            today.getUTCSeconds()
+        );
+        return nowUtc;
+    }
 }

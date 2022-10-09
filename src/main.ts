@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { Games } from './pregame/games';
+import { Players } from './pregame/players';
 // import { GameWatcher } from './watcher/watcher';
 
 // const watcher = new GameWatcher(2022010099);
@@ -24,11 +25,17 @@ import { Games } from './pregame/games';
 //   console.log(roster);
 // };
 // main();
-
 class Main {
-  static startUp() {
-    cron.schedule('* 4-17 * * *', () => {
-
+  static async startUp() {
+    const games = new Games();
+    const players = new Players();
+    cron.schedule('* 4-17 * * *', async () => {
+      await games.recordTodaysGames();
+      const gameIds = games.todaysGames.map((game) => game.gamePk);
+      await players.recordPlayersWithDelay(gameIds, 2000);
+      if (games.earliestGame) {
+        console.log(games.earliestGame);
+      }
     });
   }
 }

@@ -29,7 +29,7 @@ export class GameWatcher {
           .slice(this.playOffset)
           .filter((play: IPlay) => eventTypes.includes(play.result.eventTypeId));
         this.playOffset = plays.length - 1;
-        filteredPlays.length > 0 &&
+        filteredPlays?.length > 0 &&
           console.info(`Received ${filteredPlays.length} new plays.`);
         return filteredPlays;
       }
@@ -75,7 +75,7 @@ export class GameWatcher {
     return parsedPlayStats;
   }
 
-  public async recordPlays() {
+  public async recordPlays(): Promise<void> {
     const watcherDBActions = new WatcherDBActions();
 
     const filteredPlays = await this.fetchGameData();

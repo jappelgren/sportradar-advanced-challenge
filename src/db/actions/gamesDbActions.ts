@@ -51,6 +51,7 @@ export class GamesDBActions {
     `;
     const flattenedGames = gameData.map((game) => Object.values(game)).flat();
     try {
+      console.log(`Recording game(s) with id(s) ${gameData.map((game) => game.gameId)} in DB.`);
       pool.query(sql, flattenedGames);
     } catch (error) {
       console.error(`An error occurred while inserting/updating games into DB.  ${error}`);

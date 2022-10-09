@@ -9,7 +9,7 @@ export class Players {
         ` https://statsapi.web.nhl.com/api/v1/game/${gameId}/feed/live`
       );
       if (playerResult && playerResult.status === 200) {
-        if (playerResult.data.gameData.players) {
+        if (Object.keys(playerResult.data.gameData.players).length > 0) {
           const playersInGame: IPlayerFullDetails[] = [];
           const playersObject: IFeedPlayersObject = playerResult.data.gameData.players;
           for (const key in playersObject) {
@@ -17,7 +17,8 @@ export class Players {
           }
           return playersInGame;
         }
-        throw new Error(`No players found for game id ${gameId}, make sure ${gameId} is a valid game id.`);
+        console.warn(`No players found for game id ${gameId}. Players may not have been assigned yet. Make sure ${gameId} is a valid game id.`);
+        return [];
       }
       throw new Error(`Received a ${playerResult.status} response from NHL API.`);
     } catch (error) {
@@ -43,10 +44,21 @@ export class Players {
   public async recordPlayers(gameId: number): Promise<void> {
     const playerDbActions = new PlayerDBActions();
     const players = await this.getPlayersByGameId(gameId);
-    if(players.length < 1) {
+    if (players.length < 1) {
       return;
     }
     const parsedPlayers = this.parsePlayersForDB(players);
-    playerDbActions.recordPlayers(parsedPlayers);
+    await playerDbActions.recordPlayers(parsedPlayers);
+  }
+
+  public async recordPlayersWithDelay(gameIds: number[], delayMs = 1000) {
+    await this.recordPlayers(gameIds[0]);
+
+    if (gameIds.length > 1) {
+      setTimeout(() => {
+        gameIds.shift();
+        this.recordPlayersWithDelay(gameIds, delayMs);
+      }, delayMs);
+    }
   }
 }
