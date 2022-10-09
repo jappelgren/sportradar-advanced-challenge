@@ -6,11 +6,15 @@ import { IGame, IParsedGame } from '../models/game-model';
 export class Games {
   public todaysGames: IGame[];
   public earliestGame: IGame;
-  public startedGames: IGame[];
+  public startedGames: number[];
+
+  constructor() {
+    this.startedGames = [];
+  }
 
   private async getTodaysGames(): Promise<IGame[]> {
     // const today: string = format(new Date(), 'yyyy-MM-dd');
-    const today = '2022-10-08';
+    const today = '2022-10-07';
     try {
       const scheduleResult = await axios.get(
         `https://statsapi.web.nhl.com/api/v1/schedule?date=${today}`

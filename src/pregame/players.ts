@@ -51,7 +51,7 @@ export class Players {
     await playerDbActions.recordPlayers(parsedPlayers);
   }
 
-  public async recordPlayersWithDelay(gameIds: number[], delayMs = 1000) {
+  public async recordPlayersWithDelay(gameIds: number[], delayMs = 1000): Promise<boolean> {
     await this.recordPlayers(gameIds[0]);
 
     if (gameIds.length > 1) {
@@ -60,5 +60,6 @@ export class Players {
         this.recordPlayersWithDelay(gameIds, delayMs);
       }, delayMs);
     }
+    return true;
   }
 }

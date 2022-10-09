@@ -22,7 +22,7 @@ export class PlayerDBActions {
     `;
     const flattenedPlayers = players.map((player) => Object.values(player)).flat();
     try {
-      console.log(`Recording/updating player(s) with id(s) ${players.map((player) => player.playerId)} in DB.`);
+      console.log(`Recording/updating players with team id ${players[0].teamId} in DB.`);
       pool.query(sql, flattenedPlayers);
     } catch (error) {
       console.error(`An error occurred while trying to insert/update players in DB.  ${error}`);
