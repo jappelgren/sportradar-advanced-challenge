@@ -24,7 +24,7 @@ export class Players {
         age: player.currentAge,
         number: player.primaryNumber,
         position: player.primaryPosition.name,
-        teamId: player.currentTeam.id
+        teamId: player.currentTeam?.id || null
       };
     });
     return parsedPlayers;

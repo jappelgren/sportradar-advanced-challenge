@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { WatcherDBActions } from '../db/actions/watcherDbActions';
 import { IParsedPlay, IParsedPlayStat, IPlay } from '../models/watcher-models';
 
 enum EventTypes {
@@ -23,7 +24,7 @@ export class GameWatcher {
     this.playOffset = 0;
   }
 
-  public async fetchGameData(): Promise<IPlay[]> {
+  private async fetchGameData(): Promise<IPlay[]> {
     const eventTypes: string[] = Object.values(EventTypes);
     try {
       const gameData = await axios.get(
@@ -51,7 +52,7 @@ export class GameWatcher {
     }
   }
 
-  public parsePlaysForDB(plays: IPlay[]) {
+  private parsePlaysForDB(plays: IPlay[]) {
     const parsedPlays: IParsedPlay[] = plays.map((play: IPlay) => {
       return {
         gameId: this.gameId,
@@ -62,7 +63,7 @@ export class GameWatcher {
     return parsedPlays;
   }
 
-  public parsePlayStatsForDB(playIds: number[], plays: IPlay[]) {
+  private parsePlayStatsForDB(playIds: number[], plays: IPlay[]) {
     const playerTypes: string[] = Object.values(PlayerTypes);
     const parsedPlayStats: IParsedPlayStat[] = [];
     for (const [i, play] of plays.entries()) {
@@ -82,5 +83,18 @@ export class GameWatcher {
       parsedPlayStats.push(...preparedPlayStats);
     }
     return parsedPlayStats;
+  }
+
+  public async recordPlays() {
+    const watcherDBActions = new WatcherDBActions();
+
+    const filteredPlays = await this.fetchGameData();
+    const parsedPlays = this.parsePlaysForDB(filteredPlays);
+
+    const playDBResult = await watcherDBActions.recordPlays(parsedPlays);
+    const newPlayIds = playDBResult.map((play) => play.play_id);
+    const parsedPlayStats = this.parsePlayStatsForDB(newPlayIds, filteredPlays);
+
+    await watcherDBActions.recordPlayStats(parsedPlayStats);
   }
 }

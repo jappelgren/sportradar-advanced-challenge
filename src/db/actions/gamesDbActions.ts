@@ -1,4 +1,5 @@
 import { IParsedGame } from '../../models/game-model';
+import { Utils } from '../../utils';
 import { pool } from '../dbConfig';
 
 export class GamesDBActions {
@@ -24,20 +25,7 @@ export class GamesDBActions {
   }
 
   public recordGames(gameData: IParsedGame[]) {
-    let preparedOffset = 1;
-    const preparedStatements = gameData
-      .map((game) => {
-        let preparedString = `(`;
-        const preparedArr = [];
-        for (const _key in game) {
-          preparedArr.push(`$${preparedOffset}`);
-          preparedOffset++;
-        }
-        preparedString = preparedString.concat(`${preparedArr.join(',')})`);
-        return preparedString;
-      })
-      .join(',');
-
+    const preparedStatements = Utils.preparedStatementGenerator<IParsedGame>(gameData);
     const sql = `
         INSERT INTO nhl_stat_pipeline.games(game_id, home_team_id, away_team_id, game_date)
         VALUES ${preparedStatements};

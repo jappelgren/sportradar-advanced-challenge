@@ -10,10 +10,9 @@ create type nhl_stat_pipeline."player_position" as enum (
 );
 
 create type nhl_stat_pipeline."play_type" as enum (
-    'Assist',
-    'Goal',
-    'Hit',
-    'Penalty Minues'
+    'GOAL',
+    'HIT',
+    'PENALTY'
 );
 
 create table nhl_stat_pipeline.teams(
