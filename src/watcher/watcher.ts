@@ -1,10 +1,17 @@
 import axios from 'axios';
-import { IPlay } from './models/watcher-models';
+import { IParsedPlay, IParsedPlayStat, IPlay } from '../models/watcher-models';
 
 enum EventTypes {
   HIT = 'HIT',
   GOAL = 'GOAL',
   PENALTY = 'PENALTY',
+}
+
+enum PlayerTypes {
+  HITTER = 'Hitter',
+  SCORER = 'Scorer',
+  ASSIST = 'Assist',
+  PENALTY_ON = 'PenaltyOn'
 }
 
 export class GameWatcher {
@@ -44,5 +51,36 @@ export class GameWatcher {
     }
   }
 
-  
+  public parsePlaysForDB(plays: IPlay[]) {
+    const parsedPlays: IParsedPlay[] = plays.map((play: IPlay) => {
+      return {
+        gameId: this.gameId,
+        playType: play.result.eventTypeId,
+        timeStamp: play.about.dateTime
+      };
+    });
+    return parsedPlays;
+  }
+
+  public parsePlayStatsForDB(playIds: number[], plays: IPlay[]) {
+    const playerTypes: string[] = Object.values(PlayerTypes);
+    const parsedPlayStats: IParsedPlayStat[] = [];
+    for (const [i, play] of plays.entries()) {
+      const preparedPlayStats = play.players
+        .filter((player) => playerTypes.includes(player.playerType))
+        .map((player) => {
+          return {
+            playId: playIds[i],
+            playerId: player.player.id,
+            hitValue: player.playerType === PlayerTypes.HITTER ? 1 : 0,
+            goalValue: player.playerType === PlayerTypes.SCORER ? 1 : 0,
+            assistValue: player.playerType === PlayerTypes.ASSIST ? 1 : 0,
+            penaltyMinutes: player.playerType === PlayerTypes.PENALTY_ON ? play.result.penaltyMinutes : 0,
+            pointValue: player.playerType === PlayerTypes.ASSIST || player.playerType === PlayerTypes.SCORER ? 1 : 0
+          };
+        });
+      parsedPlayStats.push(...preparedPlayStats);
+    }
+    return parsedPlayStats;
+  }
 }

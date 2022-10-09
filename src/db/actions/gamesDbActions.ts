@@ -1,4 +1,4 @@
-import { IParsedGame } from '../../pregame/models/game-model';
+import { IParsedGame } from '../../models/game-model';
 import { pool } from '../dbConfig';
 
 export class GamesDBActions {

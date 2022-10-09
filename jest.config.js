@@ -5,7 +5,7 @@ module.exports = {
     '^.+\\.ts?$': 'ts-jest',
   },
   roots: [
-    "src"
+    'src'
   ],
   moduleFileExtensions: ['ts', 'js', 'json', 'node']
 };

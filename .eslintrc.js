@@ -38,4 +38,4 @@ module.exports = {
     'semi': 0,
     'quotes': ['warn', 'single', { 'allowTemplateLiterals': true }]
   }
-}
+};

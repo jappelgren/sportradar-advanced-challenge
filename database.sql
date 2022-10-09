@@ -27,7 +27,7 @@ create table nhl_stat_pipeline.players(
     first_name varchar(200) not null,
     last_name varchar(200) not null,
     "age" int null,
-    "number" int null,
+    "number" varchar(10) null,
     "position" nhl_stat_pipeline.player_position not null,
     team_id bigint references nhl_stat_pipeline.teams(team_id) on delete cascade
 );

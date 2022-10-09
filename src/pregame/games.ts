@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { format } from 'date-fns';
 import { GamesDBActions } from '../db/actions/gamesDbActions';
-import { IGame, IParsedGame } from './models/game-model';
+import { IGame, IParsedGame } from '../models/game-model';
 
 export class Games {
   public todaysGames: IGame[];
