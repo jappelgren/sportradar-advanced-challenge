@@ -1,4 +1,5 @@
 import { differenceInMinutes } from 'date-fns';
+import { Players } from '../pregame/players';
 import { Utils } from '../utils';
 import { GameWatcher } from './watcher';
 
@@ -13,8 +14,10 @@ class WatcherMain {
     console.info(`${nowAndStartTimeDiff > 10 ? `Waiting for game id: ${gameId} to start. There are ${nowAndStartTimeDiff} minutes until game scheduled start time.` : ''}`);
 
     // Instantiate game watcher object 10 minutes before game start.
-    if (!this.initializedGame && nowAndStartTimeDiff <= 10) {
+    if (!this.initializedGame && nowAndStartTimeDiff <= 5) {
       console.info(`Initializing watcher for game id ${gameId}`);
+      const players = new Players();
+      players.recordPlayers(gameId);
       this.initializedGame = new GameWatcher(gameId);
     }
     /* 

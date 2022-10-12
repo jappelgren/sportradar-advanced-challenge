@@ -5,7 +5,6 @@ import { Players } from './pregame/players';
 import { Utils } from './utils';
 import { exec } from 'node:child_process';
 
-
 class Main {
   static async startUp() {
     // Instantiate new Games and Players objects.
@@ -13,7 +12,7 @@ class Main {
     const players = new Players();
 
     // Cron job will check schedule and players every hour from 4 am until 5 pm.
-    cron.schedule('0 4-17 * * *', async () => {
+    cron.schedule('0 4-23 * * *', async () => {
       // Record any games being played today and records them in DB.
       await games.recordTodaysGames();
 

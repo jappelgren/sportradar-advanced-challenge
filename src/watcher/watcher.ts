@@ -2,6 +2,7 @@ import axios from 'axios';
 import { WatcherDBActions } from '../db/actions/watcherDbActions';
 import { PlayerTypes } from '../models/player-models';
 import { EventTypes, IParsedPlay, IParsedPlayStat, IPlay } from '../models/watcher-models';
+
 export class GameWatcher {
   public gameId: number;
   public gameOver: boolean;
@@ -21,16 +22,16 @@ export class GameWatcher {
       );
 
       if (gameData && gameData.status === 200) {
-        if (gameData.data.gameData.status.abstractGameState === 'Final' || gameData.data.gameData.dateTime.endDateTime) {
+        if (gameData.data.gameData.status.abstractGameState === 'Final' || gameData.data.gameData.dateTime?.endDateTime) {
           this.gameOver = true;
         }
         const plays: IPlay[] = gameData.data.liveData.plays.allPlays;
         const filteredPlays: IPlay[] = plays
           .slice(this.playOffset)
           .filter((play: IPlay) => eventTypes.includes(play.result.eventTypeId));
-        this.playOffset = plays.length - 1;
+        this.playOffset = plays.length;
         filteredPlays?.length > 0 &&
-          console.info(`Received ${filteredPlays.length} new plays.`);
+          console.info(`Received ${filteredPlays?.length} new plays.`);
         return filteredPlays;
       }
       throw new Error(`Received ${gameData.status} response from NHL API.`);
@@ -79,7 +80,7 @@ export class GameWatcher {
     const watcherDBActions = new WatcherDBActions();
 
     const filteredPlays = await this.fetchGameData();
-    if (filteredPlays.length < 1) {
+    if (filteredPlays?.length < 1) {
       return;
     }
     const parsedPlays = this.parsePlaysForDB(filteredPlays);
